@@ -78,6 +78,12 @@ Active session route: frontend /session → backend /session/*
 - `backend/.env` exists with DATABASE_URL (gitignored, survives shutdown)
 - TypeScript passes 0 errors on both frontend and backend
 
+## Future Improvements
+- Create exercises based on these CoderPad question banks:
+  - PostgreSQL: https://coderpad.io/interview-questions/postgresql-interview-questions/
+  - Node.js: https://coderpad.io/interview-questions/nodejs-interview-questions/
+  - Python: https://coderpad.io/interview-questions/python-interview-questions/#more-python-interview-resources
+
 ## Startup (after reboot)
 1. Start Docker Desktop
 2. `docker start ecstatic_lovelace` (Postgres container, port 5432, db: learn_react, user: postgres)
