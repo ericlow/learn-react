@@ -1,0 +1,3 @@
+-- Active session seed data.
+-- Claude rewrites this file at the start of each session.
+-- Run `npm run db:reset` from the project root to apply.
