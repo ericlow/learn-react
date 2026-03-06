@@ -75,5 +75,11 @@ Active session route: frontend /session → backend /session/*
 ## Setup
 - `npm install` done at root, frontend, backend
 - pg, dotenv, @types/pg installed in backend
-- `.env` needed at backend/ with DATABASE_URL (see .env.example)
+- `backend/.env` exists with DATABASE_URL (gitignored, survives shutdown)
 - TypeScript passes 0 errors on both frontend and backend
+
+## Startup (after reboot)
+1. Start Docker Desktop
+2. `docker start ecstatic_lovelace` (Postgres container, port 5432, db: learn_react, user: postgres)
+3. `npm run dev` from project root
+4. DB data persists in Docker volume — only run `npm run db:reset` when starting a new session
