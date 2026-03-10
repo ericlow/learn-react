@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useReducer } from 'react'
 import { Link } from 'react-router-dom'
 import { apiFetch } from '../../lib/api'
 import type { Product } from '../../types'
@@ -7,11 +7,22 @@ import type { Product } from '../../types'
 // SCENARIO 3 — Shopping Cart
 // Read scenarios/cart/README.md for the full interview brief.
 // ---------------------------------------------------------------------------
+export interface CartItem {
+  product: Product
+  quantity: number
+}
+
+interface Action {
+  type: "INCREMENT_ITEM" | "DECREMENT_ITEM" | "REMOVE_ITEM"
+  product?: Product
+  productId?: string
+}
 
 export default function CartScenario() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [cartItems, dispatch] = useReducer(reducer,[])
 
   useEffect(() => {
     setLoading(true)
@@ -20,6 +31,79 @@ export default function CartScenario() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [])
+  
+  function increment_item(cartItems: CartItem[], product?: Product): CartItem[] {
+    
+    if (!product)     return cartItems;
+
+    const existing = cartItems.find(item => item.product.id === product.id)
+
+    let cart_copy: CartItem[];
+    if (existing) {
+      cart_copy = (cartItems.map(item => item.product.id === product.id ? {...item, quantity: item.quantity + 1} : item))
+    } else {
+      cart_copy = ([...cartItems, { product, quantity: 1}])
+    }
+
+    return cart_copy;    
+
+  }
+  
+  function remove_item(cartItems:CartItem[], product?: Product): CartItem[] {
+    if (!product) return cartItems;
+
+    const item_exists = cartItems.find(item => item.product.id === product.id);
+    if (item_exists){
+      return cartItems.filter(item => item.product.id != product.id)
+    }
+    return cartItems;
+  }
+
+  function decrement_item_qty(cartItems:CartItem[], product?: Product): CartItem[] {
+    if (!product) return cartItems;
+    // map to update the quantities
+    // filter to remove items with 0 qty
+    let mapped_cartItems= cartItems.map(item => item.product.id === product.id ? { product: item.product, quantity: item.quantity - 1 } : item );
+    let filtered_cartItems = mapped_cartItems.filter(item => item.quantity > 0);
+    return filtered_cartItems;
+  }
+
+  function reducer(cartItems:CartItem[], action: Action): CartItem[] {
+    console.log('reducer called')
+    switch(action.type) {
+      case "INCREMENT_ITEM":
+        return increment_item(cartItems, action.product);
+      case "DECREMENT_ITEM":
+        return decrement_item_qty(cartItems, action.product);
+      case "REMOVE_ITEM":
+        return remove_item(cartItems, action.product);
+
+    }
+
+    return cartItems
+
+  }
+
+  function handleClick(product: Product) {
+    dispatch({ type: 'INCREMENT_ITEM', product: product})
+  }
+
+  function handleRemoveItemClick(product:Product) {
+    dispatch({ type: "REMOVE_ITEM", product: product})
+  }
+
+  function handleDecrementQtyClick(product:Product) {
+    dispatch({ type: "DECREMENT_ITEM", product: product})
+
+  }
+
+  function getTotalCartItems() {
+    let total = 0;
+    for (const cart of cartItems) {
+      total = total + cart.quantity
+    }
+    return total;
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-8">
@@ -56,14 +140,21 @@ export default function CartScenario() {
                 <span className="text-sm font-bold text-indigo-400">
                   ${product.price.toFixed(2)}
                 </span>
-                <button className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
+                <button onClick={() => handleClick(product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
                   Add to cart
+                </button>
+                <button onClick={() => handleRemoveItemClick(product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
+                  remove from cart
+                </button>
+                <button onClick={() => handleDecrementQtyClick(product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
+                  decrement item
                 </button>
               </div>
             </div>
           ))}
         </div>
       </div>
+          <span>{getTotalCartItems()}</span>
     </div>
   )
 }
