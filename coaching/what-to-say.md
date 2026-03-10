@@ -161,3 +161,13 @@ prevents the most common full-stack mistake: building a frontend that assumes th
 | Stuck | "Stuck on X. I think the issue is Y but not sure..." |
 | Phase complete | "Done with Phase N. Working: ... Missing: ... Ready to move on?" |
 | Follow-up answer | "[Answer]. The reason is... The trade-off is..." |
+
+---
+
+## How Claude Should Deliver Code Examples
+
+When asked for a code example, follow this sequence:
+
+1. **Generic example first** — show the full function signature including return type, then a concrete example using an unrelated domain (person, animal, car, teacher) to illustrate the concept without giving away the solution
+2. **Hint toward the specific problem** — if still stuck after the generic example
+3. **Give the working code directly** — after 3 hints with no progress
