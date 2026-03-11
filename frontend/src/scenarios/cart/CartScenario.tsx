@@ -2,6 +2,7 @@ import { useState, useEffect, useReducer } from 'react'
 import { Link } from 'react-router-dom'
 import { apiFetch } from '../../lib/api'
 import type { Product } from '../../types'
+import CartSidebar from './CartSidebar'
 
 // ---------------------------------------------------------------------------
 // SCENARIO 3 — Shopping Cart
@@ -62,7 +63,6 @@ function reducer(cartItems:CartItem[], action: Action): CartItem[] {
   }
 
   return cartItems
-
 }
 
 
@@ -80,7 +80,7 @@ export default function CartScenario() {
       .finally(() => setLoading(false))
   }, [])
   
-  function handleClick(product: Product) {
+  function handleIncrementItemClick(product: Product) {
     dispatch({ type: 'INCREMENT_ITEM', product: product})
   }
 
@@ -92,13 +92,7 @@ export default function CartScenario() {
     dispatch({ type: "DECREMENT_ITEM", product: product})
   }
 
-  function getSubtotal() {
-    let total = 0;
-    for (const cart of cartItems) {
-      total = total + cart.quantity * cart.product.price
-    }
-    return total.toFixed(2);
-  }
+
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-8">
@@ -135,42 +129,19 @@ export default function CartScenario() {
                 <span className="text-sm font-bold text-indigo-400">
                   ${product.price.toFixed(2)}
                 </span>
-                <button onClick={() => handleClick(product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
+                <button onClick={() => handleIncrementItemClick(product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
                   Add to cart
                 </button>
               </div>
             </div>
           ))}
         </div>
-        <div id="sidebar">
-          {cartItems.map((cartItem) => (
-            <div
-              key={cartItem.product.id}
-              className="p-4 rounded-lg bg-slate-900 border border-slate-800"
-            >
-              <div className="text-sm font-medium text-slate-200 mb-1">{cartItem.product.name}</div>
-              <div className="text-xs text-slate-500 mb-2">{cartItem.product.description}</div>
-              <div className="text-xs text-slate-500 mb-2">{cartItem.quantity}</div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-indigo-400">
-                  ${(cartItem.product.price * cartItem.quantity).toFixed(2) }
-                </span>
-                <button onClick={() => handleClick(cartItem.product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
-                  Increment Item
-                </button>
-                <button onClick={() => handleRemoveItemClick(cartItem.product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
-                  Remove
-                </button>
-                <button onClick={() => handleDecrementQtyClick(cartItem.product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
-                  Decrement item
-                </button>
-              </div>
-            </div>
-          ))}
 
-          <span>Total: {getSubtotal()}</span>
-
-        </div>
+        <CartSidebar 
+          handleIncrementItemClick={handleIncrementItemClick}
+          handleDecrementQtyClick={handleDecrementQtyClick}
+          handleRemoveItemClick={handleRemoveItemClick} 
+          cartItems={cartItems}></CartSidebar>
       </div>
     </div>
   )
