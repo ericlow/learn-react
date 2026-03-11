@@ -168,8 +168,9 @@ export default function CartScenario() {
             </div>
           ))}
 
+          <span>Total: {getSubtotal()}</span>
+
         </div>
-        <span>Total: {getSubtotal()}</span>
       </div>
     </div>
   )
