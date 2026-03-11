@@ -15,7 +15,6 @@ export interface CartItem {
 interface Action {
   type: "INCREMENT_ITEM" | "DECREMENT_ITEM" | "REMOVE_ITEM"
   product?: Product
-  productId?: string
 }
 
 function increment_item(cartItems: CartItem[], product?: Product): CartItem[] {
@@ -38,11 +37,7 @@ function increment_item(cartItems: CartItem[], product?: Product): CartItem[] {
 function remove_item(cartItems:CartItem[], product?: Product): CartItem[] {
   if (!product) return cartItems;
 
-  const item_exists = cartItems.find(item => item.product.id === product.id);
-  if (item_exists){
-    return cartItems.filter(item => item.product.id != product.id)
-  }
-  return cartItems;
+  return cartItems.filter(item => item.product.id != product.id)
 }
 
 function decrement_item_qty(cartItems:CartItem[], product?: Product): CartItem[] {
@@ -55,7 +50,7 @@ function decrement_item_qty(cartItems:CartItem[], product?: Product): CartItem[]
 }
 
 function reducer(cartItems:CartItem[], action: Action): CartItem[] {
-  console.log('reducer called')
+
   switch(action.type) {
     case "INCREMENT_ITEM":
       return increment_item(cartItems, action.product);
@@ -95,15 +90,14 @@ export default function CartScenario() {
 
   function handleDecrementQtyClick(product:Product) {
     dispatch({ type: "DECREMENT_ITEM", product: product})
-
   }
 
-  function getTotalCartItems() {
+  function getSubtotal() {
     let total = 0;
     for (const cart of cartItems) {
-      total = total + cart.quantity
+      total = total + cart.quantity * cart.product.price
     }
-    return total;
+    return total.toFixed(2);
   }
 
   return (
@@ -144,18 +138,39 @@ export default function CartScenario() {
                 <button onClick={() => handleClick(product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
                   Add to cart
                 </button>
-                <button onClick={() => handleRemoveItemClick(product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
-                  remove from cart
-                </button>
-                <button onClick={() => handleDecrementQtyClick(product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
-                  decrement item
-                </button>
               </div>
             </div>
           ))}
         </div>
+        <div id="sidebar">
+          {cartItems.map((cartItem) => (
+            <div
+              key={cartItem.product.id}
+              className="p-4 rounded-lg bg-slate-900 border border-slate-800"
+            >
+              <div className="text-sm font-medium text-slate-200 mb-1">{cartItem.product.name}</div>
+              <div className="text-xs text-slate-500 mb-2">{cartItem.product.description}</div>
+              <div className="text-xs text-slate-500 mb-2">{cartItem.quantity}</div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-indigo-400">
+                  ${(cartItem.product.price * cartItem.quantity).toFixed(2) }
+                </span>
+                <button onClick={() => handleClick(cartItem.product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
+                  Increment Item
+                </button>
+                <button onClick={() => handleRemoveItemClick(cartItem.product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
+                  Remove
+                </button>
+                <button onClick={() => handleDecrementQtyClick(cartItem.product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
+                  Decrement item
+                </button>
+              </div>
+            </div>
+          ))}
+
+        </div>
+        <span>Total: {getSubtotal()}</span>
       </div>
-          <span>{getTotalCartItems()}</span>
     </div>
   )
 }
