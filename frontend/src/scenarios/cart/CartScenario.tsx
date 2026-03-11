@@ -18,6 +18,59 @@ interface Action {
   productId?: string
 }
 
+function increment_item(cartItems: CartItem[], product?: Product): CartItem[] {
+  
+  if (!product)     return cartItems;
+
+  const existing = cartItems.find(item => item.product.id === product.id)
+
+  let cart_copy: CartItem[];
+  if (existing) {
+    cart_copy = (cartItems.map(item => item.product.id === product.id ? {...item, quantity: item.quantity + 1} : item))
+  } else {
+    cart_copy = ([...cartItems, { product, quantity: 1}])
+  }
+
+  return cart_copy;    
+
+}
+
+function remove_item(cartItems:CartItem[], product?: Product): CartItem[] {
+  if (!product) return cartItems;
+
+  const item_exists = cartItems.find(item => item.product.id === product.id);
+  if (item_exists){
+    return cartItems.filter(item => item.product.id != product.id)
+  }
+  return cartItems;
+}
+
+function decrement_item_qty(cartItems:CartItem[], product?: Product): CartItem[] {
+  if (!product) return cartItems;
+  // map to update the quantities
+  // filter to remove items with 0 qty
+  let mapped_cartItems= cartItems.map(item => item.product.id === product.id ? { product: item.product, quantity: item.quantity - 1 } : item );
+  let filtered_cartItems = mapped_cartItems.filter(item => item.quantity > 0);
+  return filtered_cartItems;
+}
+
+function reducer(cartItems:CartItem[], action: Action): CartItem[] {
+  console.log('reducer called')
+  switch(action.type) {
+    case "INCREMENT_ITEM":
+      return increment_item(cartItems, action.product);
+    case "DECREMENT_ITEM":
+      return decrement_item_qty(cartItems, action.product);
+    case "REMOVE_ITEM":
+      return remove_item(cartItems, action.product);
+
+  }
+
+  return cartItems
+
+}
+
+
 export default function CartScenario() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
@@ -32,58 +85,6 @@ export default function CartScenario() {
       .finally(() => setLoading(false))
   }, [])
   
-  function increment_item(cartItems: CartItem[], product?: Product): CartItem[] {
-    
-    if (!product)     return cartItems;
-
-    const existing = cartItems.find(item => item.product.id === product.id)
-
-    let cart_copy: CartItem[];
-    if (existing) {
-      cart_copy = (cartItems.map(item => item.product.id === product.id ? {...item, quantity: item.quantity + 1} : item))
-    } else {
-      cart_copy = ([...cartItems, { product, quantity: 1}])
-    }
-
-    return cart_copy;    
-
-  }
-  
-  function remove_item(cartItems:CartItem[], product?: Product): CartItem[] {
-    if (!product) return cartItems;
-
-    const item_exists = cartItems.find(item => item.product.id === product.id);
-    if (item_exists){
-      return cartItems.filter(item => item.product.id != product.id)
-    }
-    return cartItems;
-  }
-
-  function decrement_item_qty(cartItems:CartItem[], product?: Product): CartItem[] {
-    if (!product) return cartItems;
-    // map to update the quantities
-    // filter to remove items with 0 qty
-    let mapped_cartItems= cartItems.map(item => item.product.id === product.id ? { product: item.product, quantity: item.quantity - 1 } : item );
-    let filtered_cartItems = mapped_cartItems.filter(item => item.quantity > 0);
-    return filtered_cartItems;
-  }
-
-  function reducer(cartItems:CartItem[], action: Action): CartItem[] {
-    console.log('reducer called')
-    switch(action.type) {
-      case "INCREMENT_ITEM":
-        return increment_item(cartItems, action.product);
-      case "DECREMENT_ITEM":
-        return decrement_item_qty(cartItems, action.product);
-      case "REMOVE_ITEM":
-        return remove_item(cartItems, action.product);
-
-    }
-
-    return cartItems
-
-  }
-
   function handleClick(product: Product) {
     dispatch({ type: 'INCREMENT_ITEM', product: product})
   }
