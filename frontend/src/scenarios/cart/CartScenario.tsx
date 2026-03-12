@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { apiFetch } from '../../lib/api'
 import type { Product } from '../../types'
 import CartSidebar from './CartSidebar'
+import { CartContext } from './CartContext'
 
 // ---------------------------------------------------------------------------
 // SCENARIO 3 — Shopping Cart
@@ -13,7 +14,7 @@ export interface CartItem {
   quantity: number
 }
 
-interface Action {
+export interface Action {
   type: "INCREMENT_ITEM" | "DECREMENT_ITEM" | "REMOVE_ITEM"
   product?: Product
 }
@@ -84,16 +85,6 @@ export default function CartScenario() {
     dispatch({ type: 'INCREMENT_ITEM', product: product})
   }
 
-  function handleRemoveItemClick(product:Product) {
-    dispatch({ type: "REMOVE_ITEM", product: product})
-  }
-
-  function handleDecrementQtyClick(product:Product) {
-    dispatch({ type: "DECREMENT_ITEM", product: product})
-  }
-
-
-
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-8">
       <div className="max-w-3xl mx-auto">
@@ -116,32 +107,29 @@ export default function CartScenario() {
 
         {loading && <p className="text-slate-400">Loading...</p>}
         {error && <p className="text-red-400">Error: {error}</p>}
-
-        <div className="grid grid-cols-2 gap-4">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="p-4 rounded-lg bg-slate-900 border border-slate-800"
-            >
-              <div className="text-sm font-medium text-slate-200 mb-1">{product.name}</div>
-              <div className="text-xs text-slate-500 mb-2">{product.description}</div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-indigo-400">
-                  ${product.price.toFixed(2)}
-                </span>
-                <button onClick={() => handleIncrementItemClick(product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
-                  Add to cart
-                </button>
+        <CartContext.Provider value= {{ cartItems, dispatch }}>
+          <div className="grid grid-cols-2 gap-4">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="p-4 rounded-lg bg-slate-900 border border-slate-800"
+              >
+                <div className="text-sm font-medium text-slate-200 mb-1">{product.name}</div>
+                <div className="text-xs text-slate-500 mb-2">{product.description}</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-indigo-400">
+                    ${product.price.toFixed(2)}
+                  </span>
+                  <button onClick={() => handleIncrementItemClick(product)} className="text-xs px-3 py-1 rounded bg-indigo-700 hover:bg-indigo-600 transition-colors">
+                    Add to cart
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        <CartSidebar 
-          handleIncrementItemClick={handleIncrementItemClick}
-          handleDecrementQtyClick={handleDecrementQtyClick}
-          handleRemoveItemClick={handleRemoveItemClick} 
-          cartItems={cartItems}></CartSidebar>
+          <CartSidebar/>
+        </CartContext.Provider>
       </div>
     </div>
   )
