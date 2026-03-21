@@ -3,6 +3,7 @@ export interface Task {
   title: string
   completed: boolean
   createdAt: string
+  priority: 'low' | 'medium' | 'high'
 }
 
 export interface User {

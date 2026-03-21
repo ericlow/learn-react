@@ -3,6 +3,7 @@ export interface Task {
   title: string
   completed: boolean
   createdAt: string
+  priority: 'low' | 'medium' | 'high'
 }
 
 export interface User {
@@ -25,15 +26,16 @@ export interface Product {
 }
 
 // In-memory stores — reset on server restart
+// TODO: add priority to each task once the interface is updated
 export const tasks: Task[] = [
-  { id: '1', title: 'Set up project structure', completed: true, createdAt: '2026-03-01T09:00:00Z' },
-  { id: '2', title: 'Write API integration tests', completed: false, createdAt: '2026-03-02T10:30:00Z' },
-  { id: '3', title: 'Review pull request #42', completed: false, createdAt: '2026-03-03T11:00:00Z' },
-  { id: '4', title: 'Update documentation', completed: false, createdAt: '2026-03-04T14:00:00Z' },
-  { id: '5', title: 'Fix login redirect bug', completed: true, createdAt: '2026-03-04T15:30:00Z' },
-  { id: '6', title: 'Deploy to staging environment', completed: false, createdAt: '2026-03-05T08:00:00Z' },
-  { id: '7', title: 'Schedule Q2 planning meeting', completed: false, createdAt: '2026-03-05T09:15:00Z' },
-  { id: '8', title: 'Refactor authentication module', completed: false, createdAt: '2026-03-05T10:00:00Z' },
+  { id: '1', title: 'Set up project structure', completed: true, createdAt: '2026-03-01T09:00:00Z', priority:'high' },
+  { id: '2', title: 'Write API integration tests', completed: false, createdAt: '2026-03-02T10:30:00Z', priority:'low'},
+  { id: '3', title: 'Review pull request #42', completed: false, createdAt: '2026-03-03T11:00:00Z', priority:'high'},
+  { id: '4', title: 'Update documentation', completed: false, createdAt: '2026-03-04T14:00:00Z' , priority:'medium'},
+  { id: '5', title: 'Fix login redirect bug', completed: true, createdAt: '2026-03-04T15:30:00Z' , priority:'low'},
+  { id: '6', title: 'Deploy to staging environment', completed: false, createdAt: '2026-03-05T08:00:00Z', priority:'high'},
+  { id: '7', title: 'Schedule Q2 planning meeting', completed: false, createdAt: '2026-03-05T09:15:00Z' , priority:'medium'},
+  { id: '8', title: 'Refactor authentication module', completed: false, createdAt: '2026-03-05T10:00:00Z' , priority:'low'},
 ]
 
 export const users: User[] = [
