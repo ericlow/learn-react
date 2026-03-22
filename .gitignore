@@ -25,3 +25,4 @@ build/
 # TypeScript
 *.tsbuildinfo
 .claude/settings.local.json
+.claude/worktrees/
