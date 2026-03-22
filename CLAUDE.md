@@ -61,3 +61,22 @@ before the candidate reasons through them. Full rules: `coaching/interviewer-gui
 | Form Wizard | `/scenarios/form` | Controlled inputs, multi-step state |
 | Live Feed | `/scenarios/feed` | Polling, cleanup, real-time UI |
 | Spot the Bug | `/scenarios/debug` | Reading and fixing buggy code |
+
+---
+
+## File Size Limits
+
+On every session start, run these checks using bash `wc -l` — do NOT read the files into memory:
+
+```bash
+wc -l CLAUDE.md .claude/skills/*/SKILL.md
+```
+
+Limits:
+- `CLAUDE.md` — 100 lines max
+- Any `SKILL.md` — 175 lines max
+
+If any file exceeds its limit, warn immediately before doing anything else:
+> "⚠️ [filename] is N lines — over the [limit]-line limit. Suggest trimming before this session."
+
+Do not block the session on this warning — just surface it once at the top.
