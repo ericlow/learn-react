@@ -24,4 +24,4 @@ build/
 
 # TypeScript
 *.tsbuildinfo
-.claude/
+.claude/settings.local.json
